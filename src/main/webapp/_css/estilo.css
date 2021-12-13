@@ -1,0 +1,50 @@
+@charset "UTF-8";
+p{
+    text-align: justify;
+    text-indent: 30pt;
+    hyphens: auto;
+}
+
+body{
+    background-color: aliceblue;   
+}
+
+h2{
+    text-align: center;
+}
+
+
+
+nav#menu ul{
+    list-style: none;
+    text-transform: uppercase;
+   	
+    top: 0px;
+    left: 400px;
+}
+
+nav#menu li{
+    display: inline-block;
+    background-color: rgba(79, 181, 219, 0.432);
+    padding: 10px;
+    margin: 2px;
+    transition: background-color 1s;
+    border-radius: 10px;
+}
+
+nav#menu h1{
+    display: none;
+}
+
+nav#menu input {
+	text-transform: uppercase;
+ 	display: block;
+    background-color: rgba(79, 181, 219, 0.432);
+    padding: 10px;
+    margin: 0px;
+    transition: background-color 1s;
+    border-radius: 10px;
+}
+
+
+
