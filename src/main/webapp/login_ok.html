@@ -3,9 +3,18 @@
       xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Área para Deletar</title>
+        <link rel = "stylesheet" type="text/css" href="_css/estilo.css"/>
+<title>Área de Acesso</title>
 </head>
  <body>
-        <h1>Área de Recadastramento</h1>
+        <h1>Seleciona sua Opção</h1>
+        
+        <br/>
+		<form action="dataDb" method="GET">
+	 	<input type="submit" value="Dados Armazenados">
+        </form>
+        <form action="doDelete" method="GET">
+	 	<input type="submit" value="Dados Armazenados dos Usuários">
+        </form>
     </body>
 </html>

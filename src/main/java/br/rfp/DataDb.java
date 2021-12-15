@@ -13,12 +13,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCrypt;
+
 
 /**
  * Servlet implementation class MyServletJDBC
  */
-@WebServlet("/doDelete")
-public class Delete extends SaveDb {
+@WebServlet("/dataDb")
+public class DataDb extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
 	private Connection connection;
@@ -29,7 +32,7 @@ public class Delete extends SaveDb {
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public Delete() {
+    public DataDb() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -38,9 +41,12 @@ public class Delete extends SaveDb {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
     
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+		
 		conectar();
 		
 		response.setContentType("text/html");
@@ -57,92 +63,59 @@ public class Delete extends SaveDb {
 				
 		
 		try {
-			out.println("<h2>Lista de Pessoas cadastradas no banco de dados</h2>");
+			out.println("<h2>Lista de dados cadastrados!</h2>");
 			out.println("<br/>");
-			rs = statement.executeQuery("SELECT * FROM import");
+			rs = statement.executeQuery("SELECT * FROM testando");
         } catch (Exception ex) {
             System.out.println("Exception: " + ex.getMessage());
         }
 		
+		out.println("<div class=\"container\">");
+		out.println("<table class=\"table table-fixed\">");
+		out.println("<thead>");
+		out.println("<tr>");
+		out.println("<th scope=\"col\">Id</th>");
+		out.println("<th scope=\"col\">Data</th>");
+		out.println("<th scope=\"col\">Corrente</th>");
+		out.println("<th scope=\"col\">Tensáo</th>");
+		out.println("<th scope=\"col\">Ampere-Hora Total</th>");
+		out.println("<th scope=\"col\">Potência Total</th>");
+		out.println("<th scope=\"col\">Tensão de Barramento</th>");
+		out.println("</tr>");
+		out.println("</thead>");
+
+		
+		
+		out.println("<tbody>");
 
 		if (rs != null) {
             try {
                 while (rs.next()) {
-                	out.println("<strong>ID: </strong>" + rs.getString("ID"));
-                    out.println("<strong>Nome: </strong>" + rs.getString("username"));
-                    out.println("<strong>Email: </strong>" + rs.getString("email"));
-                    out.println("<strong>Cidade: </strong>" + rs.getString("cidade") + "<br><br>");
+                	out.println("<tr>");
+                	out.println("<th scope=\"row\"> " + rs.getString("id") + "</th>");
+                	out.println("<th scope=\"row\"> " + rs.getString("data1") + "</th>");
+                	out.println("<th scope=\"row\"> " + rs.getString("corrente") + "</th>");
+                	out.println("<th scope=\"row\"> " + rs.getString("tensao") + "</th>");
+                	out.println("<th scope=\"row\"> " + rs.getString("ahtotal") + "</th>");
+                	out.println("<th scope=\"row\"> " + rs.getString("whtotal") + "</th>");
+                	out.println("<th scope=\"row\"> " + rs.getString("vbus") + "</th>");
+            		out.println("</tr>");
+
                 }
             } catch (SQLException e) {
                 System.out.println(e);
             }
         }
-		out.println("<br/>");
-		out.println("<br/>");
-		out.println("<form actio=\"doDelete\" method=\"POST\"");
-		out.println("<h2>Digite a ID Usuário a Ser Deletado:</h2>");
-		out.println("<br/>");
-		
-		out.println("<input type=\"text\" name=\"ID\" />");
-		out.println("<input type=\"submit\" value=\"Delete - doDelete\" />");
-		out.println("</form>");
+		out.println("</tbody>");
+		out.println("</table>");
 		out.println("</body>\r\n");
 		out.println("</html>");
+		
 		
 		
 	}
-    
 	
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		Integer ID = Integer.parseInt(request.getParameter("ID"));
-		// ID1 = Integer.parseInt(ID); 
-		conectar();
-		
-		System.out.println(ID);
 
-		String query = "DELETE FROM import Where id='"+ID+"' ";
-        int status = executeUpdate(query);
-		
-		response.setContentType("text/html");
-		response.setCharacterEncoding("UTF-8");
-		PrintWriter out = response.getWriter();
-		
-		out.println("<html>\r\n");
-		out.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">");
-		out.println("<body>");
-		if (status == 1) {
-			out.println("<h3>A Pessoa "+ ID + " foi deletada com sucesso!</h3>");
-		}
-		
-		
-		try {
-			out.println("<h2>Lista de Pessoas cadastradas no banco de dados</h2>");
-            rs = statement.executeQuery("SELECT * FROM import");
-        } catch (Exception ex) {
-            System.out.println("Exception: " + ex.getMessage());
-        }
-		
-
-		if (rs != null) {
-            try {
-                while (rs.next()) {
-                	out.println("<strong>ID: </strong>" + rs.getString("ID"));
-                    out.println("<strong>Nome: </strong>" + rs.getString("username"));
-                    out.println("<strong>Nome: </strong>" + rs.getString("password"));
-                    out.println("<strong>Email: </strong>" + rs.getString("email"));
-                    out.println("<strong>Cidade: </strong>" + rs.getString("cidade") + "<br><br>");
-                }
-            } catch (SQLException e) {
-                System.out.println(e);
-            }
-        }
-		
-		
-		out.println("</body>\r\n");
-		out.println("</html>");
-		
-		
-	} 
 	
 	private void conectar() {
     	try {
@@ -161,6 +134,13 @@ public class Delete extends SaveDb {
         }
     	
     }
+	
+	
+	@Bean
+	public String encoder(String userPass) {
+		return BCrypt.hashpw(userPass, BCrypt.gensalt(12));
+	}
+	
 	
 	// Para inserções, alterações e exclusões   
     public int executeUpdate(String query) {     
