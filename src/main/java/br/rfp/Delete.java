@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
  * Servlet implementation class MyServletJDBC
  */
 @WebServlet("/doDelete")
-public class Delete extends ServletPessoa {
+public class Delete extends SaveDb {
 	private static final long serialVersionUID = 1L;
 	
 	private Connection connection;

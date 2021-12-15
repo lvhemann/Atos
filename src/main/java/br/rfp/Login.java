@@ -1,6 +1,5 @@
 package br.rfp;
 
-import java.io.PrintWriter;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -14,15 +13,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCrypt;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 
 /**
  * Servlet implementation class MyServletJDBC
  */
 @WebServlet("/DoLogin")
+@Configuration
+@EnableWebSecurity
 public class Login extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
@@ -44,6 +45,7 @@ public class Login extends HttpServlet {
 	 */
     
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		Integer valor = 0;
 		String userLogin = request.getParameter("userLogin");
 		String userPass = (request.getParameter("userPass"));
 		
@@ -66,16 +68,31 @@ public class Login extends HttpServlet {
                 	 System.out.println(rs.getString("username"));
                 	 System.out.println(rs.getString("password"));
                 	 String userDB = rs.getString("password");
-                	 boolean ok = decodeString(userPass1, userDB);
-                  	 System.out.println(rs.getString("role"));
-                	 System.out.println(ok);
+                	 boolean ok = decodeString(userPass, userDB);
+                  	 System.out.println(rs.getString("email"));
+                  	 System.out.println(rs.getString("cidade"));
+                  	 if(ok == true) {
+                  		 valor = 1;
+                  	 } else if ( ok == false ) {
+                  		 valor = 0;
+                  	 }
                 }
             } catch (SQLException e) {
                 System.out.println(e);
             }
-        }	   
-	}    
-
+        }
+  
+		if(valor == 1) {
+			response.sendRedirect("login_ok.html");
+			
+        } else {
+        	response.sendRedirect("noUser.html");
+        }
+        
+        
+	}  
+	
+	
 	@Bean
 	public String encoder(String userPass) {
 		return BCrypt.hashpw(userPass, BCrypt.gensalt(12));
@@ -144,3 +161,4 @@ public class Login extends HttpServlet {
 	
 	
 }
+

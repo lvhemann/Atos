@@ -13,12 +13,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCrypt;
+
 
 /**
  * Servlet implementation class MyServletJDBC
  */
-@WebServlet("/ServletPessoa")
-public class ServletPessoa extends Login {
+@WebServlet("/SaveDb")
+public class SaveDb extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
 	private Connection connection;
@@ -29,7 +32,7 @@ public class ServletPessoa extends Login {
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public ServletPessoa() {
+    public SaveDb() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -38,49 +41,6 @@ public class ServletPessoa extends Login {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
     
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		response.setContentType("text/html");
-		response.setCharacterEncoding("UTF-8");
-		
-		conectar();
-		
-		
-		PrintWriter out = response.getWriter();
-		
-		out.println("<html>\r\n");
-		out.println("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">");
-		out.println("<body>");
-
-		//EXIBIR TODAS AS PESSOAS CADASTRADAS NO BD
-		
-		try {
-			out.println("<h2>Lista de Pessoas cadastradas no banco de dados</h2>");
-            rs = statement.executeQuery("SELECT * FROM pessoa");
-        } catch (Exception ex) {
-            System.out.println("Exception: " + ex.getMessage());
-        }
-		
-
-		if (rs != null) {
-            try {
-                while (rs.next()) {
-                	out.println("<strong>ID: </strong>" + rs.getString("ID") + "<br>");
-                    out.println("<strong>Nome: </strong>" + rs.getString("nome") + "<br>");
-                    out.println("<strong>Email: </strong>" + rs.getString("email") + "<br>");
-                    out.println("<strong>Cidade: </strong>" + rs.getString("cidade") + "<br><br>");
-                }
-            } catch (SQLException e) {
-                System.out.println(e);
-            }
-        }
-		
-		
-		out.println("</body>\r\n");
-		out.println("</html>");
-		
-	}
-
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
@@ -88,12 +48,19 @@ public class ServletPessoa extends Login {
 		String nome = request.getParameter("nome");
 		String email = request.getParameter("email");
 		String cidade = request.getParameter("cidade");
+		String userPass = request.getParameter("password");
 		
+		String userPass1 = encoder(userPass);
+		System.out.println(nome);
+		System.out.println(email);
+		System.out.println(cidade);
+		System.out.println(userPass);
+		System.out.println(userPass1);
 		conectar();
 		
 		// INSERIR A PESSOA
-		String query = "INSERT INTO pessoa (nome, email, cidade) "
-                + "values ('"+nome+"', '"+email+"', '"+cidade+"')";
+		String query = "INSERT INTO import (id, username, password, email, cidade) "
+                + "values (Null,'"+nome+"','"+userPass1+"' ,'"+email+"', '"+cidade+"')";
         int status = executeUpdate(query);
 		
 		
@@ -113,7 +80,7 @@ public class ServletPessoa extends Login {
 		
 		try {
 			out.println("<h2>Lista de Pessoas cadastradas no banco de dados</h2>");
-            rs = statement.executeQuery("SELECT * FROM pessoa");
+            rs = statement.executeQuery("SELECT * FROM import");
         } catch (Exception ex) {
             System.out.println("Exception: " + ex.getMessage());
         }
@@ -123,7 +90,8 @@ public class ServletPessoa extends Login {
             try {
                 while (rs.next()) {
                 	out.println("<strong>ID: </strong>" + rs.getString("ID") + "<br>");
-                    out.println("<strong>Nome: </strong>" + rs.getString("nome") + "<br>");
+                    out.println("<strong>Nome: </strong>" + rs.getString("username") + "<br>");
+                    out.println("<strong>Pass: </strong>" + rs.getString("password") + "<br>");
                     out.println("<strong>Email: </strong>" + rs.getString("email") + "<br>");
                     out.println("<strong>Cidade: </strong>" + rs.getString("cidade") + "<br><br>");
                 }
@@ -158,6 +126,13 @@ public class ServletPessoa extends Login {
         }
     	
     }
+	
+	
+	@Bean
+	public String encoder(String userPass) {
+		return BCrypt.hashpw(userPass, BCrypt.gensalt(12));
+	}
+	
 	
 	// Para inserções, alterações e exclusões   
     public int executeUpdate(String query) {     
